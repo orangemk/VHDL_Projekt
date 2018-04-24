@@ -90,6 +90,40 @@ component PWM is port(
     );
 end component;
 
+component S2P is
+    generic( n : positive := 9 );
+    Port ( 
+    seriell_in : in std_logic;
+    CLK : in std_logic;
+    reset : in std_logic;
+    parallel_out : out std_logic_vector(n-1 downto 0);
+    s2p_snyc : out std_logic
+    );
+end component;
+
+component P2S is
+     generic(n:integer:=9);
+     Port (
+         p_in :in std_logic_vector(n-1 downto 0);
+         CLK :in std_logic;
+         reset : in std_logic;
+         sync_out: out std_logic;
+         s_out: out std_logic);
+end component;
+
+    component clk_div is
+        generic (DIV: integer := 4);
+        port (clk_in: in std_logic;
+              clk_out: out std_logic);
+    end component;
+
+    component clk_div_pow2 is
+        generic (N: integer := 4); -- N bits
+        port (clk_in: in std_logic;
+              count: out std_logic_vector(N-1 downto 0));
+    end component;
+
+
 signal daddr_in_sig : STD_LOGIC_VECTOR (6 downto 0) := "0000000";
 signal den_in_sig : std_logic := '0';
 signal di_in_sig : STD_LOGIC_VECTOR (15 downto 0) := "0000000000000000";
@@ -111,6 +145,16 @@ signal vn_in_sig : std_logic := '0';
 signal counter_out_sig : STD_LOGIC_VECTOR (8 downto 0) := "000000000";
 signal di_PWM_sig : STD_LOGIC_VECTOR (8 downto 0) := "000000000";
 signal PWM_out_sig : std_logic := '0';
+
+signal di_P2S_sig : std_logic_vector (8 downto 0) := (others=>'0');
+signal sync_out_sig : std_logic := '0';
+signal seriell_sig : std_logic := '0';
+signal s2p_snyc_sig : std_logic := '0';
+signal parallel_out_sig : std_logic_vector (8 downto 0) := (others=>'0');
+
+    signal clk_100MHz, clk_2MHz, clk_1MHz, clk_500kHz, clk_250kHz: std_logic := '1';
+    signal mod_signal, data, demod_sync_pulse, bit_int: std_logic := '0';
+    signal clk_pow2: std_logic_vector(3 downto 0) := (others => '0');
 
 begin
 
@@ -141,6 +185,29 @@ x2: PWM PORT MAP(
     counter_out => counter_out_sig
 );
 
+
+x3: S2P 
+    generic map ( n => 9 )
+    Port MAP ( 
+    seriell_in  => seriell_sig,
+    CLK         => clk_250kHz,
+    reset       => '1',
+    parallel_out => parallel_out_sig,
+    s2p_snyc    => s2p_snyc_sig
+    );
+
+
+x4: P2S 
+     generic map(n => 9)
+     Port MAP(
+         p_in   => di_P2S_sig,
+         CLK    => clk_250kHz,
+         reset  => '1',
+         sync_out   => sync_out_sig,
+         s_out  => seriell_sig
+         );
+
+
 AUD_PWM <= PWM_out_sig;
 LED2 <= PWM_out_sig;
 
@@ -151,15 +218,28 @@ daddr_in_sig <= "0010011";    -- aus3
 --daddr_in_sig <= "0010010";      -- aux2
 dclk_in_sig <= CLK100MHZ;
 
---do_out <= do_out_sig;
 
---LED2 <= SW;
---LED1 <= do_out_sig(9);
 
-x3: process(drdy_out_sig)
+    --clk_100MHz <= not clk_100MHz after 5ns;
+    clk_1MHz <= clk_pow2(1);
+    clk_500kHz <= clk_pow2(2);
+    clk_250kHz <= clk_pow2(3);
+
+    clk_div_2MHz: clk_div
+        generic map (DIV => 25)
+        port map (clk_in => CLK100MHZ, clk_out => clk_2MHz);
+
+    clk_div_pow2_N4: clk_div_pow2
+        generic map (N => 4)
+        port map (clk_in => clk_2MHz, count => clk_pow2);
+
+
+
+
+x100: process(drdy_out_sig)
 begin
     if falling_edge(drdy_out_sig) then
-        di_PWM_sig <= do_out_sig(15 downto 7);
+        di_P2S_sig <= do_out_sig(15 downto 7);
     
         if do_out_sig > "0010000000000000" then
             LED1 <= '0';
@@ -169,4 +249,10 @@ begin
     end if;
 end process;
 
+x101: process(s2p_snyc_sig)
+begin
+    if rising_edge(s2p_snyc_sig) then
+        di_PWM_sig <= parallel_out_sig;
+    end if;
+end process;
 end Behavioral;
