@@ -1,0 +1,7 @@
+# compile vhdl design source files
+vhdl xil_defaultlib  \
+"../../../../ADC_Moritz.srcs/sources_1/ip/xadc_wiz_0/xadc_wiz_0.vhd" \
+"../../../../ADC_Moritz.srcs/sources_1/imports/new/steuerung.vhd" \
+
+# Do not sort compile order
+nosort
