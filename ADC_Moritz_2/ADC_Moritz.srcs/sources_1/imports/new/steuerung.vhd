@@ -191,7 +191,7 @@ x3: S2P
     Port MAP ( 
     seriell_in  => seriell_sig,
     CLK         => clk_250kHz,
-    reset       => '1',
+    reset       => '0',
     parallel_out => parallel_out_sig,
     s2p_snyc    => s2p_snyc_sig
     );
@@ -202,7 +202,7 @@ x4: P2S
      Port MAP(
          p_in   => di_P2S_sig,
          CLK    => clk_250kHz,
-         reset  => '1',
+         reset  => '0',
          sync_out   => sync_out_sig,
          s_out  => seriell_sig
          );
