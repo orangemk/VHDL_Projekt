@@ -1,4 +1,5 @@
-﻿# ignoriere alles
+﻿# Datei von Artus
+# ignoriere alles
 *
 
 # außer .gitignore und Ordner mit Suffix ".srcs" (enthält VHDL Dateien eines
