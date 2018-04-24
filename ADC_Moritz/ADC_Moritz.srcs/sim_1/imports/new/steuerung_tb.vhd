@@ -38,28 +38,15 @@ end steuerung_tb;
 architecture Behavioral of steuerung_tb is
 
 component steuerung is port(
---daddr_in        : in  STD_LOGIC_VECTOR (6 downto 0);     -- Address bus for the dynamic reconfiguration port
---den_in          : in  STD_LOGIC;                         -- Enable Signal for the dynamic reconfiguration port
---di_in           : in  STD_LOGIC_VECTOR (15 downto 0);    -- Input data bus for the dynamic reconfiguration port
---dwe_in          : in  STD_LOGIC;                         -- Write Enable for the dynamic reconfiguration port
-do_out          : out  STD_LOGIC_VECTOR (15 downto 0);   -- Output data bus for dynamic reconfiguration port
---drdy_out        : out  STD_LOGIC;                        -- Data ready signal for the dynamic reconfiguration port
---dclk_in         : in  STD_LOGIC;                         -- Clock input for the dynamic reconfiguration port
---reset_in        : in  STD_LOGIC;                         -- Reset signal for the System Monitor control logic
 vauxp3          : in  STD_LOGIC;                         -- Auxiliary Channel 3
 vauxn3          : in  STD_LOGIC;
---busy_out        : out  STD_LOGIC;                        -- ADC Busy signal
---channel_out     : out  STD_LOGIC_VECTOR (4 downto 0);    -- Channel Selection Outputs
---eoc_out         : out  STD_LOGIC;                        -- End of Conversion Signal
---eos_out         : out  STD_LOGIC;                        -- End of Sequence Signal
---alarm_out       : out STD_LOGIC;                         -- OR'ed output of all the Alarms
---vp_in           : in  STD_LOGIC;                         -- Dedicated Analog Input Pair
---vn_in           : in  STD_LOGIC;
-
 SW  : in STD_LOGIC;
 LED1 : out STD_LOGIC;
 LED2 : out STD_LOGIC;
-CLK100MHZ : in STD_LOGIC
+CLK100MHZ : in STD_LOGIC;
+AUD_PWM : out STD_LOGIC;
+AUD_SD : out STD_LOGIC      -- Audio-Ausgangsverstaerker
+
 );
 end component;
 
@@ -85,15 +72,13 @@ signal CLK100MHZ_sig : std_logic := '0';
 signal SW_sig : std_logic := '0';
 signal LED1_sig : std_logic := '0';
 signal LED2_sig : std_logic := '0';
+Signal aud_PWM_sig :std_logic :='0';
+SIgnal sd_pwm_sig :std_logic :='0';
 
 begin
 
 x1: steuerung PORT MAP(
---daddr_in        => daddr_in_sig,
---den_in          => den_in_sig,
---di_in           => di_in_sig,
---dwe_in          => '0',                 -- low fuer lesen
-do_out          => do_out_sig,          -- Daten des ADC
+--do_out          => do_out_sig,          -- Daten des ADC
 --drdy_out        => drdy_out_sig,        -- high wenn Daten valide
 --dclk_in         => dclk_in_sig,
 --reset_in        => '0',
@@ -110,7 +95,10 @@ vauxn3          => vauxn3_sig,
 SW  => SW_sig,
 LED1 => LED1_sig,
 LED2 => LED2_sig,
-CLK100MHZ => CLK100MHZ_sig
+CLK100MHZ => CLK100MHZ_sig,
+AUD_PWM =>aud_PWM_sig,
+AUD_SD=>sd_pwm_sig    -- Audio-Ausgangsverstaerker
+
 );
 
 CLK100MHZ_sig <=    not CLK100MHZ_sig after 5ns;
