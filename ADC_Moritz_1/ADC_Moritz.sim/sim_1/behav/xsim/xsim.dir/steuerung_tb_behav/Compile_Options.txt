@@ -1,1 +1,0 @@
--wto "cb3baed0e5784adb810d005ac2a23857" --incr --debug "typical" --relax --mt "2" -L "xil_defaultlib" -L "secureip" -L "xpm" --snapshot "steuerung_tb_behav" "xil_defaultlib.steuerung_tb" -log "elaborate.log" 
