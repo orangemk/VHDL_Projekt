@@ -146,7 +146,7 @@ begin
      generic map(
         INIT_40 => X"0413", -- config reg 0
         INIT_41 => X"31AF", -- config reg 1
-        INIT_42 => X"6100", -- config reg 2
+        INIT_42 => X"4C00", -- config reg 2
         INIT_48 => X"0100", -- Sequencer channel selection
         INIT_49 => X"0000", -- Sequencer channel selection
         INIT_4A => X"0000", -- Sequencer Average selection

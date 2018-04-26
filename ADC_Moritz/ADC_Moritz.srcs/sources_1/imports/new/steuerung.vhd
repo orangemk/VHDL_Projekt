@@ -82,6 +82,14 @@ component xadc_wiz_0 is port(
 );
 end component;
 
+component FIFO is port(
+    d_in : in STD_LOGIC_VECTOR (8 downto 0);
+    drdy : in STD_LOGIC;
+    CLK250kHz : in STD_LOGIC;
+    d_out : out STD_LOGIC_VECTOR (8 downto 0)
+    );
+end component;
+
 component PWM is port(
     CLK100MHZ : in STD_LOGIC;
     di_in : in STD_LOGIC_VECTOR (8 downto 0);
@@ -178,6 +186,23 @@ x1: xadc_wiz_0 PORT MAP(
     vn_in           => vn_in_sig
 );
 
+x11: FIFO PORT MAP(
+    d_in        => do_out_sig(15 downto 7),
+    drdy        => drdy_out_sig,
+    CLK250kHz   => clk_250kHz,
+    d_out       => di_P2S_sig
+);
+
+x4: P2S 
+     generic map(n => 9)
+     Port MAP(
+         p_in   => di_P2S_sig,
+         CLK    => clk_250kHz,
+         reset  => '0',
+         sync_out   => sync_out_sig,
+         s_out  => seriell_sig
+     );
+
 x2: PWM PORT MAP(
     CLK100MHZ   => CLK100MHZ,
     di_in       => di_PWM_sig,
@@ -197,15 +222,7 @@ x3: S2P
     );
 
 
-x4: P2S 
-     generic map(n => 9)
-     Port MAP(
-         p_in   => di_P2S_sig,
-         CLK    => clk_250kHz,
-         reset  => '0',
-         sync_out   => sync_out_sig,
-         s_out  => seriell_sig
-         );
+
 
 
 AUD_PWM <= PWM_out_sig;
@@ -236,18 +253,18 @@ dclk_in_sig <= CLK100MHZ;
 
 
 
-x100: process(drdy_out_sig)
-begin
-    if falling_edge(drdy_out_sig) then
-        di_P2S_sig <= do_out_sig(15 downto 7);
+--x100: process(drdy_out_sig)
+--begin
+--    if falling_edge(drdy_out_sig) then
+--        di_P2S_sig <= do_out_sig(15 downto 7);
     
-        if do_out_sig > "0010000000000000" then
-            LED1 <= '0';
-        else
-            LED1 <= '1';
-        end if;
-    end if;
-end process;
+--        if do_out_sig > "0010000000000000" then
+--            LED1 <= '0';
+--        else
+--            LED1 <= '1';
+--        end if;
+--    end if;
+--end process;
 
 x101: process(s2p_snyc_sig)
 begin
