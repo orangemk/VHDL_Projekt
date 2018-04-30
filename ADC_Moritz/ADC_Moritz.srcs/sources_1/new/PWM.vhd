@@ -28,38 +28,46 @@ use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
-library UNISIM;
-use UNISIM.VComponents.all;
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+--use IEEE.STD_Logic_arith.all;
+use IEEE.Std_logic_unsigned.all;
 
 entity PWM is
     Port ( 
     CLK100MHZ : in STD_LOGIC;
-    di_in : in STD_LOGIC_VECTOR (8 downto 0);
-    PWM_out : out STD_LOGIC;
-    counter_out : out STD_LOGIC_VECTOR (8 downto 0)
+    PWM_in : in STD_LOGIC_VECTOR (8 downto 0);
+    PWM_out : out STD_LOGIC
     );
 end PWM;
 
 architecture Behavioral of PWM is
 
-signal counter : STD_LOGIC_VECTOR (8 downto 0) := "000000000";
+signal counter : STD_LOGIC_VECTOR (8 downto 0) := (others=>'0');
+--signal counter : integer range 0 to 512 := 0;
+signal buffer_pwm : STD_LOGIC_VECTOR (8 downto 0) := (others=>'0');
 
 begin
 
-process (CLK100MHZ)
+process (CLK100MHZ, counter, PWM_in)
 begin
-    if rising_edge(CLK100MHZ) then
-        counter <= std_logic_vector( unsigned(counter) + 1 );
-        
-        if counter = "000000000" then
-            PWM_out <= '1';
-        elsif counter = di_in then
-            PWM_out <= '0';
+    if falling_edge (CLK100MHZ) then
+        counter <= counter + 1;
+        if counter = 0 then
+             PWM_out <= '1';
+             buffer_pwm <= PWM_in;
+        elsif unsigned(counter) = unsigned(buffer_pwm) then
+             PWM_out <= '0';
         end if;
-        
-    end if;
+     end if;
 end process;
 
-counter_out <= counter;
+--process (CLK100MHz)
+--begin
+--    if rising_edge (CLK100MHz) then
+--        counter <= counter + 1;
+--    end if;
+--end process;
 
 end Behavioral;

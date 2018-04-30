@@ -62,7 +62,6 @@ entity xadc_wiz_0 is
     do_out          : out  STD_LOGIC_VECTOR (15 downto 0);   -- Output data bus for dynamic reconfiguration port
     drdy_out        : out  STD_LOGIC;                        -- Data ready signal for the dynamic reconfiguration port
     dclk_in         : in  STD_LOGIC;                         -- Clock input for the dynamic reconfiguration port
-    reset_in        : in  STD_LOGIC;                         -- Reset signal for the System Monitor control logic
     vauxp3          : in  STD_LOGIC;                         -- Auxiliary Channel 3
     vauxn3          : in  STD_LOGIC;
     busy_out        : out  STD_LOGIC;                        -- ADC Busy signal
@@ -144,9 +143,9 @@ begin
 
  U0 : XADC
      generic map(
-        INIT_40 => X"0413", -- config reg 0
+        INIT_40 => X"0013", -- config reg 0
         INIT_41 => X"31AF", -- config reg 1
-        INIT_42 => X"4C00", -- config reg 2
+        INIT_42 => X"1A00", -- config reg 2
         INIT_48 => X"0100", -- Sequencer channel selection
         INIT_49 => X"0000", -- Sequencer channel selection
         INIT_4A => X"0000", -- Sequencer Average selection
@@ -166,7 +165,7 @@ begin
         INIT_58 => X"5999",  -- Vccbram upper alarm limit
         INIT_5C => X"5111",  -- Vccbram lower alarm limit
         SIM_DEVICE => "7SERIES",
-        SIM_MONITOR_FILE => "design.txt.txt"
+        SIM_MONITOR_FILE => "design.txt"
         )
 
 port map (
@@ -177,7 +176,7 @@ port map (
         DEN                 => den_in,
         DI(15 downto 0)     => di_in(15 downto 0),
         DWE                 => dwe_in,
-        RESET               => reset_in,
+        RESET               => '0',
         VAUXN(15 downto 0)  => aux_channel_n(15 downto 0),
         VAUXP(15 downto 0)  => aux_channel_p(15 downto 0),
         ALM                 => alm_int,
