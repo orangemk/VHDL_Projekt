@@ -74,9 +74,6 @@ x1: steuerung PORT MAP(
   AUD_SD      => AUD_SD_sig
 );
 
-
-
-
 CLK100MHZ_sig <=    not CLK100MHZ_sig after 5ns;
 
 end Behavioral;

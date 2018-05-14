@@ -35,23 +35,28 @@ use IEEE.Std_logic_unsigned.all;
 
 entity timingbox is Port (
   CLK100MHZ : in STD_LOGIC;
-  CLK25kHZ : out STD_LOGIC;
-  PWM_7Seg : out STD_LOGIC
+  CLK250kHz : out STD_LOGIC;
+  CLK25kHZ  : out STD_LOGIC;
+  PWM_7Seg  : out STD_LOGIC
 );
 end timingbox;
 
 architecture Behavioral of timingbox is
 
 component clk_div is
-        generic (DIV: integer := 4);
-        port (clk_in: in std_logic;
-              clk_out: out std_logic);
+generic (DIV: integer := 4);
+port (
+  clk_in: in std_logic;
+  clk_out: out std_logic
+);
 end component;
 
 component clk_div_pow2 is
-        generic (N: integer := 4); -- N bits
-        port (clk_in: in std_logic;
-              count: out std_logic_vector(N-1 downto 0));
+generic (N: integer := 4); -- N bits
+port (
+  clk_in: in std_logic;
+  count: out std_logic_vector(N-1 downto 0)
+);
 end component;
 
 signal clk_100MHz, clk_2MHz, clk_1MHz, clk_500kHz, clk_250kHz, clk_25kHz: std_logic := '1';
@@ -66,6 +71,8 @@ clk_1MHz <= clk_pow2(1);
 clk_500kHz <= clk_pow2(2);
 clk_250kHz <= clk_pow2(3);
 CLK25kHZ <= clk_25kHz;
+
+CLK250kHz <= clk_250kHz;
 
 clk_div_2MHz: clk_div
 generic map (DIV => 25)

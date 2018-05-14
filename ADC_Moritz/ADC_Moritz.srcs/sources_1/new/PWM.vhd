@@ -35,22 +35,21 @@ use IEEE.NUMERIC_STD.ALL;
 use IEEE.Std_logic_unsigned.all;
 
 entity PWM is
-    Port ( 
-    CLK100MHZ : in STD_LOGIC;
-    PWM_in : in STD_LOGIC_VECTOR (8 downto 0);
-    PWM_out : out STD_LOGIC
-    );
+Port ( 
+  CLK100MHZ : in STD_LOGIC;
+  PWM_in : in STD_LOGIC_VECTOR (8 downto 0);
+  PWM_out : out STD_LOGIC
+);
 end PWM;
 
 architecture Behavioral of PWM is
 
 signal counter : STD_LOGIC_VECTOR (8 downto 0) := (others=>'0');
---signal counter : integer range 0 to 512 := 0;
 signal buffer_pwm : STD_LOGIC_VECTOR (8 downto 0) := (others=>'0');
 
 begin
 
-process (CLK100MHZ, counter, PWM_in)
+p1: process (CLK100MHZ, counter, PWM_in)
 begin
     if falling_edge (CLK100MHZ) then
         counter <= counter + 1;
@@ -62,12 +61,5 @@ begin
         end if;
      end if;
 end process;
-
---process (CLK100MHz)
---begin
---    if rising_edge (CLK100MHz) then
---        counter <= counter + 1;
---    end if;
---end process;
 
 end Behavioral;

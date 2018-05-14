@@ -22,44 +22,40 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 -- --------------------------------------------------------------------------------------------
--- ENTITY
+
 entity S2P is
-    generic (
-        n : positive := 9
-    );
-    Port ( 
-    seriell_in : in std_logic;
-    CLK : in std_logic;
-    reset : in std_logic;
-    parallel_out : out std_logic_vector(n-1 downto 0);
-    s2p_snyc : out std_logic
-    );
+generic (n : positive := 9);
+Port ( 
+  seriell_in : in std_logic;
+  CLK250kHz : in std_logic;
+  sync_in : in std_logic;
+  parallel_out : out std_logic_vector(n-1 downto 0)
+);
 end S2P;
 
 architecture Behavioral of S2P is
 
-signal parallel_out_tmp : std_logic_vector (n-1 downto 0) := (others=>'0');
-signal counter : std_logic_vector (n-1 downto 0) := (others=>'0');
+signal parallel_sig : std_logic_vector (n-1 downto 0) := (others=>'0');
+signal counter : std_logic_vector (3 downto 0) := (others=>'0');
 
 begin
 
-x1: process(clk)
+p1: process(CLK250kHz, counter, sync_in)
 begin
-    if rising_edge(clk) then
-        s2p_snyc <= '0';
-
-        parallel_out_tmp(parallel_out_tmp'length-1 downto 1)<=parallel_out_tmp(parallel_out_tmp'length-2 downto 0);
-        parallel_out_tmp(0) <= seriell_in;
-        
+    if rising_edge(CLK250kHz) then
+        parallel_sig(parallel_sig'length-1 downto 1) <= parallel_sig(parallel_sig'length-2 downto 0);
+        parallel_sig(0) <= seriell_in;
         counter <= counter + 1;
-        if counter = n then
+
+        if sync_in = '1' then
             counter <= (others=>'0');
-            s2p_snyc <= '1';
+        end if;
+         
+        if counter = 9 then
+            parallel_out <= parallel_sig;
         end if;
      end if;
 end process;
-
-parallel_out <= parallel_out_tmp;
 
 end Behavioral;
 
